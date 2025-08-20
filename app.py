@@ -1,7 +1,9 @@
+import os
 from flask import Flask, request, jsonify, render_template
 import torch
 from transformers import GPT2LMHeadModel, GPT2Tokenizer
 import math
+
 
 # Load model + tokenizer
 model_name = "gpt2"
@@ -129,4 +131,5 @@ if __name__ == "__main__":
     # PRODUCTION on Windows using Waitress
     from waitress import serve
     print("Serving on http://0.0.0.0:8000")
-    serve(app, host="0.0.0.0", port=8000)
+    port = int(os.environ.get("PORT", 10000))
+    serve(app, host="0.0.0.0", port=port)
