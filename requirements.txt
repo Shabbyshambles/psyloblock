@@ -1,4 +1,4 @@
 flask
-torch==2.1.0
-transformers==4.35.0
-waitress==2.1.2
+torch
+transformers
+waitress
