@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>LLM Confidence Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 700px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        textarea {
+            width: 100%;
+            font-size: 16px;
+        }
+        button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+        }
+        .metric {
+            margin-top: 20px;
+        }
+        .bar-container {
+            background-color: #eee;
+            border-radius: 8px;
+            overflow: hidden;
+            height: 20px;
+            margin-top: 5px;
+        }
+        .bar {
+            height: 100%;
+            width: 0%;
+            background-color: #4CAF50;
+            text-align: right;
+            padding-right: 5px;
+            color: white;
+            font-weight: bold;
+            transition: width 0.5s ease;
+        }
+        #loading {
+            display: none;
+            margin-top: 20px;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <h1>LLM Confidence & Prompt Dashboard</h1>
+    <textarea id="prompt" rows="4" placeholder="Type your prompt here..."></textarea><br>
+    <button onclick="checkMetrics()">Analyze</button>
+
+    <div id="loading">Analyzing prompt… please wait.</div>
+
+    <div class="metric">
+        <div>Model Confidence</div>
+        <div class="bar-container"><div id="confidenceBar" class="bar">0%</div></div>
+    </div>
+
+    <div class="metric">
+        <div>Prompt Strength</div>
+        <div class="bar-container"><div id="strengthBar" class="bar">0%</div></div>
+    </div>
+
+    <div class="metric">
+        <div>Consensus Score</div>
+        <div class="bar-container"><div id="consensusBar" class="bar">0%</div></div>
+    </div>
+
+    <script>
+        async function checkMetrics() {
+            const prompt = document.getElementById("prompt").value.trim();
+            if (!prompt) return alert("Please enter a prompt.");
+
+            // Show loading
+            document.getElementById("loading").style.display = "block";
+
+            const response = await fetch("/analyze", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({prompt})
+            });
+
+            const data = await response.json();
+
+            // Hide loading
+            document.getElementById("loading").style.display = "none";
+
+            // Update bars
+            const metrics = [
+                {id: "confidenceBar", value: data.confidence},
+                {id: "strengthBar", value: data.strength}
+            ];
+
+            metrics.forEach(metric => {
+                const bar = document.getElementById(metric.id);
+                bar.style.width = `${metric.value}%`;
+                bar.textContent = `${metric.value}%`;
+            });
+        }
+    </script>
+</body>
+</html>
